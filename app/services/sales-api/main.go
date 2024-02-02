@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"errors"
+	"expvar"
 	"fmt"
+	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"os/signal"
 	"runtime"
@@ -84,6 +87,19 @@ func run(ctx context.Context, log *logger.Logger) error {
 		return fmt.Errorf("generating config for output: %w", err)
 	}
 	log.Info(ctx, "startup", "config", out)
+
+	expvar.NewString("build").Set(build)
+
+	// ----------------------------------------------------------------------------------------
+	// start debug service
+
+	go func() {
+		log.Info(ctx, "startup", "status", "debug v1 router started", "host", cfg.Web.DebugHost)
+
+		if err := http.ListenAndServe(cfg.Web.DebugHost, http.DefaultServeMux); err != nil {
+			log.Error(ctx, "debug service ended", "err", err)
+		}
+	}()
 
 	// ----------------------------------------------------------------------------------------
 
