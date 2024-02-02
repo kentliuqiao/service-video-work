@@ -3,7 +3,10 @@ SHELL_PATH = /bin/ash
 SHELL = $(if $(wildcard $(SHELL_PATH)), /bin/ash, /bin/bash)
 
 run:
-	go run app/services/sales-api/main.go | go run app/services/tooling/logfmt/main.go
+	go run app/services/sales-api/main.go | go run app/tooling/logfmt/main.go
+
+run-help:
+	go run app/services/sales-api/main.go --help | go run app/tooling/logfmt/main.go
 
 # ==============================================================================
 # Define dependencies
@@ -117,3 +120,10 @@ dev-status:
 
 dev-down:
 	kind delete cluster --name $(KIND_CLUSTER)
+
+# ======================================================================================
+# module support
+
+tidy:
+	go mod tidy
+	go mod vendor
