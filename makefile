@@ -121,6 +121,12 @@ dev-status:
 dev-down:
 	kind delete cluster --name $(KIND_CLUSTER)
 
+# ==============================================================================
+# Metrics and Tracing
+
+metrics-view-sc:
+	expvarmon -ports="localhost:4000" -vars="build,requests,goroutines,errors,panics,mem:memstats.Alloc"
+
 # ======================================================================================
 # module support
 
