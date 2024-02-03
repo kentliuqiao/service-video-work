@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/ardanlabs/conf/v3"
+	"github.com/kentliuqiao/service/app/services/sales-api/v1/handlers"
 	v1 "github.com/kentliuqiao/service/business/web/v1"
 	"github.com/kentliuqiao/service/business/web/v1/debug"
 	"github.com/kentliuqiao/service/foundation/logger"
@@ -116,7 +117,7 @@ func run(ctx context.Context, log *logger.Logger) error {
 		Shutdown: shutdown,
 		Log:      log,
 	}
-	mux := v1.APIMux(apiMuxCfg)
+	mux := v1.APIMux(apiMuxCfg, handlers.Routes{})
 
 	api := http.Server{
 		Addr:         cfg.Web.APIHost,

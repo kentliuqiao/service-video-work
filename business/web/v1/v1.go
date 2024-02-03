@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"net/http"
 	"os"
 
 	"github.com/dimfeld/httptreemux/v5"
@@ -15,16 +14,15 @@ type APIMuxConfig struct {
 	Log      *logger.Logger
 }
 
-func APIMux(cfg APIMuxConfig) *httptreemux.ContextMux {
+// RouteAdder defines the behavior that sets the routes to bind for an instance of the service.
+type RouteAdder interface {
+	Add(mux *httptreemux.ContextMux, cfg APIMuxConfig)
+}
+
+func APIMux(cfg APIMuxConfig, routeAdder RouteAdder) *httptreemux.ContextMux {
 	mux := httptreemux.NewContextMux()
 
-	h := func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, _ = w.Write([]byte(`{"alive": true}`))
-	}
-
-	mux.Handle(http.MethodGet, "/hack", h)
+	routeAdder.Add(mux, cfg)
 
 	return mux
 }
