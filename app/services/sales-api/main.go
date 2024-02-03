@@ -103,12 +103,49 @@ func run(ctx context.Context, log *logger.Logger) error {
 	}()
 
 	// ----------------------------------------------------------------------------------------
+	// start API service
+
+	log.Info(ctx, "startup", "status", "initializing v1 API service")
 
 	shutdown := make(chan os.Signal, 1)
 	signal.Notify(shutdown, syscall.SIGINT, syscall.SIGTERM)
 
-	sig := <-shutdown
-	log.Info(ctx, "shutdown", "status", "shutdwon start", "signal", sig)
+	api := http.Server{
+		Addr:         cfg.Web.APIHost,
+		Handler:      nil,
+		ReadTimeout:  cfg.Web.ReadTimeout,
+		WriteTimeout: cfg.Web.WriteTimeout,
+		IdleTimeout:  cfg.Web.IdleTimeout,
+		ErrorLog:     logger.NewStdLogger(log, logger.LevelError),
+	}
+
+	serverErrors := make(chan error, 1)
+
+	go func() {
+		log.Info(ctx, "startup", "status", "v1 API router started", "host", cfg.Web.APIHost)
+
+		serverErrors <- api.ListenAndServe()
+	}()
+
+	// ----------------------------------------------------------------------------------------
+	// shutdown
+
+	select {
+	case err := <-serverErrors:
+		return fmt.Errorf("server error: %w", err)
+
+	case sig := <-shutdown:
+		log.Info(ctx, "shutdown", "status", "caught signal", "signal", sig)
+		defer log.Info(ctx, "shutdown", "status", "complete")
+
+		ctx, cancel := context.WithTimeout(ctx, cfg.Web.ShutdownTimeout)
+		defer cancel()
+
+		if err := api.Shutdown(ctx); err != nil {
+			api.Close()
+			return fmt.Errorf("could not stop server gracefully: %w", err)
+		}
+	}
 
 	return nil
 }
