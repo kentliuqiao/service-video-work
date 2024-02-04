@@ -3,6 +3,7 @@ package v1
 import (
 	"os"
 
+	"github.com/kentliuqiao/service/business/web/v1/mid"
 	"github.com/kentliuqiao/service/foundation/logger"
 	"github.com/kentliuqiao/service/foundation/web"
 )
@@ -20,7 +21,7 @@ type RouteAdder interface {
 }
 
 func APIMux(cfg APIMuxConfig, routeAdder RouteAdder) *web.App {
-	app := web.NewApp(cfg.Shutdown)
+	app := web.NewApp(cfg.Shutdown, mid.Logger(cfg.Log))
 
 	routeAdder.Add(app, cfg)
 
