@@ -23,7 +23,7 @@ type RouteAdder interface {
 func APIMux(cfg APIMuxConfig, routeAdder RouteAdder) *web.App {
 	app := web.NewApp(
 		cfg.Shutdown,
-		mid.Logger(cfg.Log), mid.Errors(cfg.Log),
+		mid.Logger(cfg.Log), mid.Errors(cfg.Log), mid.Metrics(),
 		// make sure to put the Panic middleware last
 		// so that it can catch any panics that occur in the handler immediately and recover from them.
 		mid.Panics(),
