@@ -18,6 +18,7 @@ import (
 	v1 "github.com/kentliuqiao/service/business/web/v1"
 	"github.com/kentliuqiao/service/business/web/v1/debug"
 	"github.com/kentliuqiao/service/foundation/logger"
+	"github.com/kentliuqiao/service/foundation/web"
 )
 
 var build = "develop"
@@ -32,7 +33,7 @@ func main() {
 	}
 
 	traceIDFn := func(ctx context.Context) string {
-		return ""
+		return web.GetTraceID(ctx)
 	}
 
 	log = logger.NewWithEvents(os.Stdout, logger.LevelInfo, "SALES-API", traceIDFn, events)
