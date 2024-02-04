@@ -3,11 +3,16 @@ package hackgrp
 import (
 	"context"
 	"net/http"
+
+	"github.com/kentliuqiao/service/foundation/web"
 )
 
 func Hack(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err := w.Write([]byte(`{"alive": true}`))
-	return err
+	status := struct {
+		Status string `json:"status"`
+	}{
+		Status: "OK",
+	}
+
+	return web.Respond(ctx, w, status, http.StatusOK)
 }
