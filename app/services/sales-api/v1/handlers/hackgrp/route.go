@@ -1,7 +1,11 @@
 package hackgrp
 
-import "github.com/dimfeld/httptreemux/v5"
+import (
+	"net/http"
 
-func Routes(mux *httptreemux.ContextMux) {
-	mux.GET("/hack", Hack)
+	"github.com/kentliuqiao/service/foundation/web"
+)
+
+func Routes(app *web.App) {
+	app.Handle(http.MethodGet, "/hack", Hack)
 }

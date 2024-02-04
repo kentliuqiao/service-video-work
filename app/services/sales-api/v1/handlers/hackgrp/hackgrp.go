@@ -1,9 +1,13 @@
 package hackgrp
 
-import "net/http"
+import (
+	"context"
+	"net/http"
+)
 
-func Hack(w http.ResponseWriter, r *http.Request) {
+func Hack(ctx context.Context, w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	_, _ = w.Write([]byte(`{"alive": true}`))
+	_, err := w.Write([]byte(`{"alive": true}`))
+	return err
 }
