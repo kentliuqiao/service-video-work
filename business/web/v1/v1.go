@@ -3,6 +3,7 @@ package v1
 import (
 	"os"
 
+	"github.com/kentliuqiao/service/business/web/v1/auth"
 	"github.com/kentliuqiao/service/business/web/v1/mid"
 	"github.com/kentliuqiao/service/foundation/logger"
 	"github.com/kentliuqiao/service/foundation/web"
@@ -13,6 +14,7 @@ type APIMuxConfig struct {
 	Build    string
 	Shutdown chan os.Signal
 	Log      *logger.Logger
+	Auth     *auth.Auth
 }
 
 // RouteAdder defines the behavior that sets the routes to bind for an instance of the service.

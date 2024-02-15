@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/kentliuqiao/service/business/web/v1/auth"
 	"github.com/kentliuqiao/service/business/web/v1/response"
 	"github.com/kentliuqiao/service/foundation/logger"
 	"github.com/kentliuqiao/service/foundation/web"
@@ -31,6 +32,13 @@ func Errors(log *logger.Logger) web.Middleware {
 						Error: reqErr.Error(),
 					}
 					status = reqErr.Status
+
+				case auth.IsAuthError(err):
+					ed = response.ErrorDocument{
+						Error: http.StatusText(http.StatusUnauthorized),
+					}
+					status = http.StatusUnauthorized
+
 				default:
 					// untrusted error.
 					ed = response.ErrorDocument{

@@ -9,5 +9,5 @@ import (
 type Routes struct{}
 
 func (Routes) Add(app *web.App, cfg v1.APIMuxConfig) {
-	hackgrp.Routes(app)
+	hackgrp.Routes(app, cfg.Auth)
 }
