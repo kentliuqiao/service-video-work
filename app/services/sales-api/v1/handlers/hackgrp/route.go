@@ -9,9 +9,11 @@ import (
 )
 
 func Routes(app *web.App, a *auth.Auth) {
+	const version = "v1"
+
 	authenticate := mid.Authenticate(a)
 	ruleAdmin := mid.Authorize(a, auth.RuleAdminOnly)
 
-	app.Handle(http.MethodGet, "/hack", Hack)
-	app.Handle(http.MethodGet, "/hackauth", Hack, authenticate, ruleAdmin)
+	app.Handle(http.MethodGet, version, "/hack", Hack)
+	app.Handle(http.MethodGet, version, "/hackauth", Hack, authenticate, ruleAdmin)
 }

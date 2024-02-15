@@ -38,14 +38,25 @@ func (a *App) SignalShutdown() {
 	a.shutdown <- syscall.SIGTERM
 }
 
+// HandleNoMiddleware sets a handler function for a given HTTP method and path pair
+// to the application server mux. Does not include the application middleware.
+func (a *App) HandleNoMiddleware(method string, group string, path string, handler Handler) {
+	a.handle(method, group, path, handler)
+}
+
 // Handle sets a handler function for a given HTTP method and path pair
 // to the application server mux.
-func (a *App) Handle(method, path string, handler Handler, mw ...Middleware) {
+func (a *App) Handle(method string, group string, path string, handler Handler, mw ...Middleware) {
 	handler = wrapMiddleware(mw, handler)
 	handler = wrapMiddleware(a.mw, handler)
 
-	h := func(w http.ResponseWriter, r *http.Request) {
+	a.handle(method, group, path, handler)
+}
 
+// handle sets a handler function for a given HTTP method and path pair
+// to the application server mux.
+func (a *App) handle(method, group, path string, handler Handler, mw ...Middleware) {
+	h := func(w http.ResponseWriter, r *http.Request) {
 		v := Values{
 			TraceID: uuid.NewString(),
 			Now:     time.Now().UTC(),
@@ -58,12 +69,14 @@ func (a *App) Handle(method, path string, handler Handler, mw ...Middleware) {
 				return
 			}
 		}
-
-		// ANY logic you want to add here.
-
 	}
 
-	a.ContextMux.Handle(method, path, h)
+	finalPath := path
+	if group != "" {
+		finalPath = "/" + group + path
+	}
+
+	a.ContextMux.Handle(method, finalPath, h)
 }
 
 // validateShutdown validates the error for special conditions that do not
