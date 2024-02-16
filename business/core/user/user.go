@@ -2,11 +2,14 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"net/mail"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/kentliuqiao/service/business/data/order"
 	"github.com/kentliuqiao/service/foundation/logger"
+	"golang.org/x/crypto/bcrypt"
 )
 
 // Storer interface declares the behavior this package needs to perists and
@@ -38,6 +41,33 @@ func NewCore(log *logger.Logger, storer Storer) *Core {
 
 // Create adds a new user to the system.
 func (c *Core) Create(ctx context.Context, nu NewUser) (User, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(nu.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return User{}, fmt.Errorf("generatefrompassword: %w", err)
+	}
 
-	return User{}, nil
+	id, err := uuid.NewV7()
+	if err != nil {
+		return User{}, fmt.Errorf("uuid newv7: %w", err)
+	}
+
+	now := time.Now()
+
+	usr := User{
+		ID:           id,
+		Name:         nu.Name,
+		Email:        nu.Email,
+		PasswordHash: hash,
+		Roles:        nu.Roles,
+		Department:   nu.Department,
+		Enabled:      true,
+		DateCreated:  now,
+		DateUpdated:  now,
+	}
+
+	if err := c.storer.Create(ctx, usr); err != nil {
+		return User{}, fmt.Errorf("create: %w", err)
+	}
+
+	return usr, nil
 }
