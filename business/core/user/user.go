@@ -2,27 +2,33 @@ package user
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"net/mail"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/kentliuqiao/service/business/data/order"
 	"github.com/kentliuqiao/service/foundation/logger"
 	"golang.org/x/crypto/bcrypt"
+)
+
+// Set of error variables for CRUD operations.
+var (
+	ErrNotFound              = errors.New("user not found")
+	ErrUniqueEmail           = errors.New("email is not unique")
+	ErrAuthenticationFailure = errors.New("authentication failed")
 )
 
 // Storer interface declares the behavior this package needs to perists and
 // retrieve data.
 type Storer interface {
 	Create(ctx context.Context, usr User) error
-	Update(ctx context.Context, usr User) error
-	Delete(ctx context.Context, usr User) error
-	Query(ctx context.Context, filter QueryFilter, orderBy order.By,
-		pageNumber int, rowsPerPage int) ([]User, error)
-	Count(ctx context.Context, filter QueryFilter) (int, error)
-	QueryByID(ctx context.Context, userID uuid.UUID) (User, error)
-	QueryByEmail(ctx context.Context, email mail.Address) (User, error)
+	// Update(ctx context.Context, usr User) error
+	// Delete(ctx context.Context, usr User) error
+	// Query(ctx context.Context, filter QueryFilter, orderBy order.By,
+	// 	pageNumber int, rowsPerPage int) ([]User, error)
+	// Count(ctx context.Context, filter QueryFilter) (int, error)
+	// QueryByID(ctx context.Context, userID uuid.UUID) (User, error)
+	// QueryByEmail(ctx context.Context, email mail.Address) (User, error)
 }
 
 // Core manages the set of APIs for user access.
