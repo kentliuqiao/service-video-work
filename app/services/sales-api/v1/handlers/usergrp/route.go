@@ -20,11 +20,11 @@ type Config struct {
 }
 
 // Routes adds specific routes for this group.
-func Routes(app *web.App, cfg Config) {
+func Routes(app *web.App, build string, log *logger.Logger, db *sqlx.DB, auth *auth.Auth) {
 	const version = "v1"
 
-	usrCore := user.NewCore(cfg.Log, userdb.NewStore(cfg.Log, cfg.DB))
+	usrCore := user.NewCore(log, userdb.NewStore(log, db))
 
-	hdl := New(usrCore, cfg.Auth)
+	hdl := New(usrCore, auth)
 	app.Handle(http.MethodPost, version, "/users", hdl.Create)
 }

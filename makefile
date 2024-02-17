@@ -31,6 +31,9 @@ ready:
 live:
 	curl -il http://localhost:3000/v1/liveness
 
+curl-create:
+	curl -il -X POST -H 'Content-Type: application/json' -d '{"name":"bill","email":"b@gmail.com","roles":["ADMIN"],"department":"IT","password":"123","passwordConfirm":"123"}' http://localhost:3000/v1/users
+
 admin:
 	go run app/tooling/sales-admin/main.go
 
